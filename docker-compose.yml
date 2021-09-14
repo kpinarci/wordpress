@@ -1,0 +1,37 @@
+version: '3.1'
+services:
+  wordpress:
+    image: wordpress:latest
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+    volumes:
+      -  wordpress-app:/var/www/html
+    ports:
+      - "8080:80"
+    networks:
+      - lan
+
+  wordpress-db:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_RANDOM_ROOT_PASSWORD: '${MYSQL_RANDOM_ROOT_PASSWORD}'
+    volumes:
+      - wordpress-db:/var/lib/mysql
+    networks:
+      - lan
+
+volumes:
+ wordpress-db:
+ wordpress-app:
+
+networks:
+  lan:
+    external: true
